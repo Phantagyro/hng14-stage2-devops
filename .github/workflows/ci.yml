@@ -168,44 +168,42 @@ jobs:
           docker load < /tmp/worker.tar.gz
           docker load < /tmp/frontend.tar.gz
 
-      - name: Scan API image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: localhost:5000/api:${{ github.sha }}
-          format: sarif
-          output: trivy-api.sarif
-          severity: CRITICAL
-          exit-code: '1'
-          ignore-unfixed: true
-          trivyignores: .trivyignore
-          scan-type: image
-          scanners: vuln
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-      - name: Scan Worker image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: localhost:5000/worker:${{ github.sha }}
-          format: sarif
-          output: trivy-worker.sarif
-          severity: CRITICAL
-          exit-code: '1'
-          ignore-unfixed: true
-          trivyignores: .trivyignore
-          scan-type: image
-          scanners: vuln
+      - name: Scan API image
+        run: |
+          trivy image \
+            --format sarif \
+            --output trivy-api.sarif \
+            --severity CRITICAL \
+            --ignore-unfixed \
+            --ignorefile .trivyignore \
+            --exit-code 1 \
+            localhost:5000/api:${{ github.sha }}
 
-      - name: Scan Frontend image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: localhost:5000/frontend:${{ github.sha }}
-          format: sarif
-          output: trivy-frontend.sarif
-          severity: CRITICAL
-          exit-code: '1'
-          ignore-unfixed: true
-          trivyignores: .trivyignore
-          scan-type: image
-          scanners: vuln
+      - name: Scan Worker image
+        run: |
+          trivy image \
+            --format sarif \
+            --output trivy-worker.sarif \
+            --severity CRITICAL \
+            --ignore-unfixed \
+            --ignorefile .trivyignore \
+            --exit-code 1 \
+            localhost:5000/worker:${{ github.sha }}
+
+      - name: Scan Frontend image
+        run: |
+          trivy image \
+            --format sarif \
+            --output trivy-frontend.sarif \
+            --severity CRITICAL \
+            --ignore-unfixed \
+            --ignorefile .trivyignore \
+            --exit-code 1 \
+            localhost:5000/frontend:${{ github.sha }}
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
