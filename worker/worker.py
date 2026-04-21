@@ -2,7 +2,6 @@ import redis
 import time
 import os
 import signal
-import sys
 
 HEALTH_FILE = "/tmp/worker_health"
 
