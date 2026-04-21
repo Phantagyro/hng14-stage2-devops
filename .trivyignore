@@ -1,0 +1,4 @@
+# Acknowledged CVEs with no fix available in base images
+# Reviewed on 2026-04-21
+CVE-2023-52425
+CVE-2025-27903
