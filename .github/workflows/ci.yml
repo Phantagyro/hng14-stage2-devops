@@ -172,10 +172,10 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: localhost:5000/api:${{ github.sha }}
-          format: table
+          format: sarif
           output: trivy-api.sarif
           severity: CRITICAL
-          exit-code: '0'
+          exit-code: '1'
           ignore-unfixed: true
           trivyignores: .trivyignore
           scan-type: image
@@ -185,10 +185,10 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: localhost:5000/worker:${{ github.sha }}
-          format: table
+          format: sarif
           output: trivy-worker.sarif
           severity: CRITICAL
-          exit-code: '0'
+          exit-code: '1'
           ignore-unfixed: true
           trivyignores: .trivyignore
           scan-type: image
@@ -198,10 +198,10 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: localhost:5000/frontend:${{ github.sha }}
-          format: table
+          format: sarif
           output: trivy-frontend.sarif
           severity: CRITICAL
-          exit-code: '0'
+          exit-code: '1'
           ignore-unfixed: true
           trivyignores: .trivyignore
           scan-type: image
@@ -209,7 +209,7 @@ jobs:
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
-        if: false
+        if: always()
         with:
           sarif_file: trivy-api.sarif
 
