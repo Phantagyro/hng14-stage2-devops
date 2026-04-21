@@ -109,6 +109,7 @@ jobs:
       - name: Build and push API image
         run: |
           docker build \
+            --cache-from ${{ env.REGISTRY }}/api:latest \
             -t ${{ env.REGISTRY }}/api:${{ github.sha }} \
             -t ${{ env.REGISTRY }}/api:latest \
             ./api
@@ -118,6 +119,7 @@ jobs:
       - name: Build and push Worker image
         run: |
           docker build \
+            --cache-from ${{ env.REGISTRY }}/api:latest \
             -t ${{ env.REGISTRY }}/worker:${{ github.sha }} \
             -t ${{ env.REGISTRY }}/worker:latest \
             ./worker
@@ -127,6 +129,7 @@ jobs:
       - name: Build and push Frontend image
         run: |
           docker build \
+            --cache-from ${{ env.REGISTRY }}/api:latest \
             -t ${{ env.REGISTRY }}/frontend:${{ github.sha }} \
             -t ${{ env.REGISTRY }}/frontend:latest \
             ./frontend
@@ -234,8 +237,10 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "REDIS_PASSWORD=testpassword123" > .env
+          echo "REDIS_PASSWORD=${REDIS_TEST_PASSWORD}" > .env
           echo "FRONTEND_PORT=3000" >> .env
+        env:
+            REDIS_TEST_PASSWORD: ${{ secrets.REDIS_PASSWORD || 'testpassword123' }}
 
       - name: Start full stack
         run: docker compose -f docker-compose.test.yml up -d
@@ -301,8 +306,10 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "REDIS_PASSWORD=testpassword123" > .env
+          echo "REDIS_PASSWORD=${REDIS_TEST_PASSWORD}" > .env
           echo "FRONTEND_PORT=3000" >> .env
+        env:
+            REDIS_TEST_PASSWORD: ${{ secrets.REDIS_PASSWORD || 'testpassword123' }}
 
       - name: Start initial deployment
         run: |
