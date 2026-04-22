@@ -8,8 +8,8 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY app.js .
 COPY views ./views
-RUN adduser -D -u 1001 appuser \
-    && chown -R appuser:appuser /app
+RUN addgroup -S appgroup && adduser -S -u 1001 -G appgroup appuser \
+    && chown -R appuser:appgroup /app
 USER appuser
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \

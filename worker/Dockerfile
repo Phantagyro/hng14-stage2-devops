@@ -7,10 +7,10 @@ FROM python:3.11-alpine
 WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY worker.py .
-RUN adduser -D -u 1001 appuser \
-    && chown -R appuser:appuser /app \
+RUN addgroup -S appgroup && adduser -S -u 1001 -G appgroup appuser \
+    && chown -R appuser:appgroup /app \
     && touch /tmp/worker_health \
-    && chown appuser:appuser /tmp/worker_health
+    && chown appuser:appgroup /tmp/worker_health
 USER appuser
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD test -f /tmp/worker_health || exit 1
